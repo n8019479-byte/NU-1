@@ -23,26 +23,32 @@ public function index()
 
     // SIMPAN BERITA BARU
     public function store(Request $request)
-    {
-        $request->validate([
-            'judul'   => 'required',
-            'penulis' => 'required',
-            'tanggal' => 'required|date',
-            'isi'     => 'required',
-            'gambar'  => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-        ]);
+{
+    $request->validate([
+        'judul' => 'required|string|max:255',
+        'kategori' => 'required|string',
+        'tanggal' => 'required|date|before_or_equal:today', // Validasi anti tanggal masa depan
+        'gambar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+        'konten' => 'required',
+    ], [
+        'tanggal.before_or_equal' => 'Tanggal berita tidak boleh melebihi hari ini!',
+    ]);
 
-        $data = $request->only(['judul', 'penulis', 'tanggal', 'isi']);
-
-        if ($request->hasFile('gambar')) {
-            // Simpan gambar ke storage/app/public/berita
-            $data['gambar'] = $request->file('gambar')->store('berita', 'public');
-        }
-
-        Berita::create($data);
-
-        return redirect()->route('berita.index')->with('success', 'Berita berhasil disimpan!');
+    $gambarPath = null;
+    if ($request->hasFile('gambar')) {
+        $gambarPath = $request->file('gambar')->store('berita', 'public');
     }
+
+    \App\Models\Berita::create([
+        'judul' => $request->judul,
+        'kategori' => $request->kategori,
+        'tanggal' => $request->tanggal, // Simpan tanggal pilihan
+        'gambar' => $gambarPath,
+        'konten' => $request->konten,
+    ]);
+
+    return redirect()->back()->with('success', 'Berita berhasil ditambahkan!');
+}
     public function show($id)
 {
     $berita = Berita::findOrFail($id);
@@ -53,38 +59,42 @@ public function index()
     return view('berita.show', compact('berita', 'beritaLain'));
 }
 
-    public function edit($id)
-    {
-        $berita = Berita::findOrFail($id);
-        return view('berita.edit', compact('berita'));
-    }
+   public function edit($id)
+{
+    $berita = \App\Models\Berita::findOrFail($id);
+    return view('admin.berita.edit', compact('berita'));
+}
 
     public function update(Request $request, $id)
-    {
-        $berita = Berita::findOrFail($id);
+{
+    $berita = \App\Models\Berita::findOrFail($id);
 
-        $request->validate([
-            'judul'   => 'required',
-            'penulis' => 'required',
-            'tanggal' => 'required|date',
-            'isi'     => 'required',
-            'gambar'  => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-        ]);
+    $request->validate([
+        'judul' => 'required|string|max:255',
+        'kategori' => 'required|string',
+        'konten' => 'required',
+        'gambar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+    ]);
 
-        $data = $request->only(['judul', 'penulis', 'tanggal', 'isi']);
+    $data = [
+        'judul' => $request->judul,
+        'kategori' => $request->kategori,
+        'konten' => $request->konten,
+    ];
 
-        if ($request->hasFile('gambar')) {
-            // Hapus gambar lama jika ada
-            if ($berita->gambar && Storage::disk('public')->exists($berita->gambar)) {
-                Storage::disk('public')->delete($berita->gambar);
-            }
-            $data['gambar'] = $request->file('gambar')->store('berita', 'public');
+    // Jika mengupload gambar baru
+    if ($request->hasFile('gambar')) {
+        // Hapus gambar lama jika ada
+        if ($berita->gambar && \Storage::exists('public/' . $berita->gambar)) {
+            \Storage::delete('public/' . $berita->gambar);
         }
-
-        $berita->update($data);
-
-        return redirect()->route('berita.index')->with('success', 'Berita berhasil diperbarui!');
+        $data['gambar'] = $request->file('gambar')->store('berita', 'public');
     }
+
+    $berita->update($data);
+
+    return redirect()->route('admin.dashboard')->with('success', 'Berita berhasil diperbarui!');
+}
 
     // HAPUS BERITA (Sesuai error di gambar image_f63ac2.png)
     public function destroy($id)
@@ -110,4 +120,5 @@ public function index()
         'total' => $berita->apresiasi
     ]);
 }
+
 }

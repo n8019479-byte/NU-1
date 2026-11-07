@@ -131,46 +131,49 @@
     </nav>
 </header>
 
-<!-- OVERLAY MENU FULL SCREEN (GESER DARI KANAN) -->
-<div id="mobile-menu" class="fixed inset-0 bg-[#FAF7F0] z-40 transform translate-x-full transition-transform duration-300 ease-in-out md:hidden flex flex-col justify-between px-6 py-24">
+<!-- OVERLAY MENU FULL SCREEN (MOBILE MENU) -->
+<div id="mobile-menu" class="fixed inset-0 bg-[#FAF7F0] z-[60] transform translate-x-full transition-transform duration-300 ease-in-out md:hidden flex flex-col justify-between px-6 py-6">
     
-    <!-- Bagian Link Menu Utama -->
-    <div class="space-y-6 flex flex-col">
-        <a href="{{ route('berita.index') }}" class="text-2xl font-black text-gray-900 hover:text-nu transition-colors flex items-center justify-between border-b border-gray-200 pb-4">
+    <!-- Header Kapsul Hijau (Menyesuaikan dengan Foto Kedua) -->
+    <div class="bg-nu rounded-full px-4 py-2.5 flex items-center justify-between shadow-md">
+        <div class="flex items-center gap-3">
+            <img src="{{ asset('images/logo-nu.png') }}" class="h-8 w-auto object-contain" alt="Logo NU">
+            <div>
+                <span class="text-white font-extrabold text-sm tracking-tight block">NU Kedungurang</span>
+                <span class="text-[9px] text-emerald-200/90 font-medium tracking-wider uppercase block">Portal Resmi Ranting</span>
+            </div>
+        </div>
+        <!-- Tombol Tutup di dalam Kapsul Hijau -->
+        <button id="close-menu-btn" class="w-8 h-8 rounded-full bg-emerald-900/60 hover:bg-emerald-900 text-white flex items-center justify-center transition-colors focus:outline-none">
+            <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+    </div>
+
+    <!-- Daftar Link Navigasi -->
+    <div class="space-y-4 flex flex-col my-auto">
+        <a href="{{ route('berita.index') }}" class="text-xl font-black text-gray-900 hover:text-nu transition-colors flex items-center justify-between border-b border-gray-200 pb-3">
             <span>Beranda</span>
-            @if(request()->routeIs('berita.index'))
-                <span class="w-3 h-3 rounded-full bg-nu"></span>
-            @endif
+            <i class="fa-solid fa-chevron-right text-xs text-gray-400"></i>
         </a>
-        <a href="{{ route('organisasi.index') }}" class="text-2xl font-black text-gray-900 hover:text-nu transition-colors flex items-center justify-between border-b border-gray-200 pb-4">
-            <span>Struktur Organisasi</span>
-            @if(request()->routeIs('organisasi.index'))
-                <span class="w-3 h-3 rounded-full bg-nu"></span>
-            @endif
+        <a href="{{ route('organisasi.index') }}" class="text-xl font-black text-gray-900 hover:text-nu transition-colors flex items-center justify-between border-b border-gray-200 pb-3">
+            <span>Struktur dan Organisasi</span>
+            <i class="fa-solid fa-chevron-right text-xs text-gray-400"></i>
         </a>
-        <a href="{{ route('kegiatan.index') }}" class="text-2xl font-black text-gray-900 hover:text-nu transition-colors flex items-center justify-between border-b border-gray-200 pb-4">
+        <a href="{{ route('kegiatan.index') }}" class="text-xl font-black text-gray-900 hover:text-nu transition-colors flex items-center justify-between border-b border-gray-200 pb-3">
             <span>Kegiatan</span>
-            @if(request()->routeIs('kegiatan.index'))
-                <span class="w-3 h-3 rounded-full bg-nu"></span>
-            @endif
+            <i class="fa-solid fa-chevron-right text-xs text-gray-400"></i>
         </a>
-        <a href="{{ route('anggota.index') }}" class="text-2xl font-black text-gray-900 hover:text-nu transition-colors flex items-center justify-between border-b border-gray-200 pb-4">
+        <a href="{{ route('anggota.index') }}" class="text-xl font-black text-gray-900 hover:text-nu transition-colors flex items-center justify-between border-b border-gray-200 pb-3">
             <span>Anggota</span>
-            @if(request()->routeIs('anggota.index'))
-                <span class="w-3 h-3 rounded-full bg-nu"></span>
-            @endif
+            <i class="fa-solid fa-chevron-right text-xs text-gray-400"></i>
         </a>
     </div>
 
-    <!-- Bagian Bawah: Tombol Dashboard / Login Admin -->
-    <div class="space-y-3 pb-6">
-        @auth
-            <a href="{{ route('admin.dashboard') }}" class="flex items-center justify-center gap-2 w-full bg-nu text-white py-3.5 rounded-2xl text-sm font-extrabold shadow-lg">
-                <i class="fa-solid fa-gauge-high"></i> Dashboard Admin
-            </a>
-        @else
-        @endauth
+    <!-- Footer Menu Mobile -->
+    <div class="text-center text-[10px] text-gray-500 pt-4 border-t border-gray-200">
+        &copy; 2026 Nahdlatul Ulama Ranting Kedungurang
     </div>
+</div>
 
 </div>
 

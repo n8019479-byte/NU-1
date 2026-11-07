@@ -44,7 +44,6 @@
                     <li><a href="#" class="hover:text-amber-300 transition-colors">GP Ansor</a></li>
                     <li><a href="#" class="hover:text-amber-300 transition-colors">Fatayat NU</a></li>
                     <li><a href="#" class="hover:text-amber-300 transition-colors">IPNU & IPPNU</a></li>
-                    <li><a href="#" class="hover:text-amber-300 transition-colors">LAZISNU Kedungurang</a></li>
                 </ul>
             </div>
 
@@ -60,7 +59,7 @@
                     
                     <p class="flex items-center gap-2">
                         <i class="fa-solid fa-phone text-amber-300 shrink-0"></i>
-                        <span>+62 812-3456-7890</span>
+                        <span>+62 812-1560-6726</span>
                     </p>
                     
                     <p class="flex items-center gap-2">

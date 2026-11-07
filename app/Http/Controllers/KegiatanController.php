@@ -3,19 +3,24 @@ namespace App\Http\Controllers;
 
 use App\Models\Kegiatan;
 use Illuminate\Http\Request;
+use App\Models\Jadwal;
+use App\Models\Dokumentasi;
 
 class KegiatanController extends Controller
 {
     // Tampilan Publik Jadwal Kegiatan
     public function index()
-    {
-        $kegiatans = Kegiatan::orderBy('tanggal', 'asc')->get();
-        return view('kegiatan.index', compact('kegiatans'));
-    }
+{
+    $jadwals = Jadwal::all();
+    $dokumentasis = Dokumentasi::latest()->get(); // <-- Pastikan ini ada
+
+    return view('kegiatan.index', compact('jadwals', 'dokumentasis'));
+}
 
     // Form Tambah Jadwal (Admin)
-    public function create()
+   public function create()
     {
+        // Diubah dari admin.jadwal.create menjadi admin.kegiatan.create
         return view('admin.kegiatan.create');
     }
 
@@ -69,4 +74,11 @@ class KegiatanController extends Controller
 
         return redirect()->route('kegiatan.index')->with('success', 'Jadwal kegiatan berhasil dihapus!');
     }
+    public function dashboard()
+{
+    $jadwals = Jadwal::all();
+    $dokumentasis = Dokumentasi::latest()->get(); // <-- Pastikan ini ada untuk admin dashboard
+
+    return view('admin.dashboard', compact('jadwals', 'dokumentasis'));
+}
 }

@@ -9,6 +9,7 @@ use App\Http\Controllers\KegiatanController;
 use App\Http\Controllers\OrganisasiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AdminDokumentasiController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -84,3 +85,16 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/admin/jamaah/approve/{id}', [AdminController::class, 'approveJamaah'])->name('admin.jamaah.approve');
 });
 Route::post('/berita/{id}/apresiasi', [BeritaController::class, 'apresiasi'])->name('berita.apresiasi');
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    // Rute Jadwal Kegiatan
+    Route::get('/jadwal/create', [App\Http\Controllers\KegiatanController::class, 'create'])->name('jadwal.create');
+    Route::post('/jadwal', [App\Http\Controllers\KegiatanController::class, 'store'])->name('jadwal.store');
+
+    // Rute Dokumentasi Kegiatan yang sebelumnya kita buat
+    Route::get('/dokumentasi/create', [App\Http\Controllers\AdminDokumentasiController::class, 'create'])->name('dokumentasi.create');
+    Route::post('/dokumentasi', [App\Http\Controllers\AdminDokumentasiController::class, 'store'])->name('dokumentasi.store');
+    Route::delete('/dokumentasi/{id}', [App\Http\Controllers\AdminDokumentasiController::class, 'destroy'])->name('dokumentasi.destroy');
+});
+Route::get('/anggota/profil/{nia}', [AnggotaController::class, 'showProfile'])->name('anggota.profil');
+Route::get('/admin/berita/{id}/edit', [BeritaController::class, 'edit'])->name('admin.berita.edit');
+Route::put('/admin/berita/{id}', [BeritaController::class, 'update'])->name('admin.berita.update');

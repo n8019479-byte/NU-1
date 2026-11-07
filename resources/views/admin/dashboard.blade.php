@@ -102,81 +102,148 @@
                                 <th class="p-3.5 text-right">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-100">
-                            @forelse($beritas ?? [] as $item)
-                                <tr class="hover:bg-gray-50/50">
-                                    <td class="p-3.5 font-bold text-gray-900">{{ $item->judul }}</td>
-                                    <td class="p-3.5"><span class="bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-md font-extrabold text-[10px]">{{ $item->kategori }}</span></td>
-                                    <td class="p-3.5 text-gray-500">{{ $item->created_at->format('d M Y') }}</td>
-                                    <td class="p-3.5 text-right">
-                                        <form action="{{ route('admin.berita.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus berita ini?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="px-2.5 py-1 bg-rose-100 text-rose-800 hover:bg-rose-200 rounded-lg font-bold">Hapus</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="p-6 text-center text-gray-400">Belum ada data berita. Silakan tambahkan berita baru.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
+                      <tbody class="divide-y divide-gray-100">
+    @forelse($beritas ?? [] as $item)
+        <tr class="hover:bg-gray-50/50">
+            <td class="p-3.5 font-bold text-gray-900">{{ $item->judul }}</td>
+            <td class="p-3.5">
+                <span class="bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-md font-extrabold text-[10px]">{{ $item->kategori }}</span>
+            </td>
+            <td class="p-3.5 text-gray-500">{{ $item->created_at->format('d M Y') }}</td>
+            <td class="p-3.5 text-right">
+                <div class="flex items-center justify-end gap-2">
+                    
+                    <!-- Tombol Edit -->
+                    <a href="{{ route('admin.berita.edit', $item->id) }}" 
+                       class="px-2.5 py-1 bg-blue-100 text-blue-800 hover:bg-blue-200 rounded-lg font-bold text-xs inline-flex items-center gap-1 transition">
+                        <i class="fa-solid fa-pen-to-square"></i> Edit
+                    </a>
+
+                    <!-- Tombol Hapus -->
+                    <form action="{{ route('admin.berita.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus berita ini?')" class="inline-block">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="px-2.5 py-1 bg-rose-100 text-rose-800 hover:bg-rose-200 rounded-lg font-bold text-xs transition">
+                            Hapus
+                        </button>
+                    </form>
+
+                </div>
+            </td>
+        </tr>
+    @empty
+        <tr>
+            <td colspan="4" class="p-6 text-center text-gray-400 text-xs font-semibold">
+                Belum ada data berita yang ditambahkan.
+            </td>
+        </tr>
+    @endforelse
+</tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- TAB 2: KELOLA KEGIATAN (JADWAL) -->
-            <div x-show="activeTab === 'kegiatan'" style="display: none;" class="p-6 space-y-6">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <h3 class="text-base font-black text-gray-900">Daftar Jadwal Kegiatan Bulanan</h3>
-                        <p class="text-xs text-gray-500">Kelola jadwal pengajian, hadroh, dan agenda ranting NU Kedungurang.</p>
-                    </div>
-                    <button @click="showTambahKegiatanModal = true" class="bg-nu hover:bg-nu-dark text-white px-4 py-2 rounded-xl text-xs font-bold shadow-sm flex items-center gap-2 transition-all">
-                        <i class="fa-solid fa-plus"></i> Tambah Jadwal Baru
-                    </button>
-                </div>
+           <!-- TAB KELOLA KEGIATAN & DOKUMENTASI DI DASHBOARD ADMIN -->
+<div class="space-y-6" x-data="{ subTab: 'jadwal' }">
+    
+    <!-- Sub Tab Navigasi (Jadwal vs Dokumentasi Foto) -->
+    <div class="flex items-center gap-3 border-b border-gray-200 pb-4">
+        <button @click="subTab = 'jadwal'" :class="subTab === 'jadwal' ? 'bg-emerald-800 text-white shadow' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'" class="px-4 py-2 rounded-xl text-xs font-bold transition-all">
+            <i class="fa-solid fa-calendar-days mr-1.5"></i> Kelola Jadwal
+        </button>
+        <button @click="subTab = 'dokumentasi'" :class="subTab === 'dokumentasi' ? 'bg-emerald-800 text-white shadow' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'" class="px-4 py-2 rounded-xl text-xs font-bold transition-all">
+            <i class="fa-solid fa-images mr-1.5"></i> Kelola Dokumentasi Foto
+        </button>
+    </div>
 
-                <div class="overflow-x-auto border border-gray-100 rounded-xl">
-                    <table class="w-full text-left text-xs">
-                        <thead class="bg-gray-50 text-gray-700 font-bold uppercase border-b border-gray-100">
-                            <tr>
-                                <th class="p-3.5">Nama Kegiatan</th>
-                                <th class="p-3.5">Kategori</th>
-                                <th class="p-3.5">Tanggal & Waktu</th>
-                                <th class="p-3.5">Lokasi</th>
-                                <th class="p-3.5 text-right">Aksi</th>
+    <!-- KONTEN 1: TAB KELOLA JADWAL -->
+    <div x-show="subTab === 'jadwal'" class="space-y-4">
+        <div class="flex items-center justify-between">
+            <div>
+                <h3 class="text-lg font-black text-gray-900">Daftar Jadwal Kegiatan Bulanan</h3>
+                <p class="text-xs text-gray-500">Kelola jadwal pengajian, hadroh, dan agenda ranting NU Kedungurang.</p>
+            </div>
+            <a href="{{ route('admin.jadwal.create') }}" class="inline-flex items-center gap-2 bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow transition-all">
+                <i class="fa-solid fa-plus"></i>
+                <span>Tambah Jadwal Baru</span>
+            </a>
+        </div>
+
+        <!-- Tabel Jadwal -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                    <tr class="bg-gray-50 border-b border-gray-100 text-gray-500 uppercase font-bold tracking-wider">
+                        <th class="p-4">Nama Kegiatan</th>
+                        <th class="p-4">Kategori</th>
+                        <th class="p-4">Tanggal & Waktu</th>
+                        <th class="p-4">Lokasi</th>
+                        <th class="p-4 text-right">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    @isset($jadwals)
+                        @foreach($jadwals as $jadwal)
+                            <tr class="hover:bg-gray-50/50">
+                                <td class="p-4 font-bold text-gray-900">{{ $jadwal->nama_kegiatan ?? $jadwal->judul }}</td>
+                                <td class="p-4"><span class="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-md font-bold">{{ $jadwal->kategori ?? 'Kegiatan' }}</span></td>
+                                <td class="p-4 text-gray-600">{{ $jadwal->tanggal }}</td>
+                                <td class="p-4 text-gray-600">{{ $jadwal->lokasi }}</td>
+                                <td class="p-4 text-right space-x-2">
+                                    <a href="#" class="text-amber-600 font-bold hover:underline">Edit</a>
+                                    <form action="#" method="POST" class="inline">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="text-rose-600 font-bold hover:underline">Hapus</button>
+                                    </form>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100">
-                            @forelse($kegiatans ?? [] as $item)
-                                <tr class="hover:bg-gray-50/50">
-                                    <td class="p-3.5 font-bold text-gray-900">{{ $item->judul }}</td>
-                                    <td class="p-3.5"><span class="bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-md font-extrabold text-[10px]">{{ $item->kategori }}</span></td>
-                                    <td class="p-3.5 text-gray-600">
-                                        {{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}<br>
-                                        <span class="text-[10px] text-gray-400 font-medium">{{ $item->waktu }}</span>
-                                    </td>
-                                    <td class="p-3.5 text-gray-600">{{ $item->lokasi }}</td>
-                                    <td class="p-3.5 text-right space-x-1">
-                                        <a href="{{ url('/kegiatan/' . $item->id . '/edit') }}" class="px-2.5 py-1 bg-amber-100 text-amber-800 hover:bg-amber-200 rounded-lg font-bold inline-block">Edit</a>
-                                        <form action="{{ url('/kegiatan/' . $item->id) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus jadwal ini?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="px-2.5 py-1 bg-rose-100 text-rose-800 hover:bg-rose-200 rounded-lg font-bold">Hapus</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="p-6 text-center text-gray-400">Belum ada jadwal kegiatan yang ditambahkan.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                        @endforeach
+                    @endisset
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- KONTEN 2: TAB KELOLA DOKUMENTASI FOTO -->
+    <div x-show="subTab === 'dokumentasi'" class="space-y-4" style="display: none;">
+        <div class="flex items-center justify-between">
+            <div>
+                <h3 class="text-lg font-black text-gray-900">Galeri Foto Dokumentasi Kegiatan</h3>
+                <p class="text-xs text-gray-500">Unggah dan kelola arsip foto kegiatan yang akan tampil di halaman publik.</p>
             </div>
+            <a href="{{ route('admin.dokumentasi.create') }}" class="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-gray-950 text-xs font-bold px-4 py-2.5 rounded-xl shadow transition-all">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <span>+ Tambah Foto Dokumentasi</span>
+            </a>
+        </div>
+
+        <!-- Grid Tabel / List Foto Dokumentasi -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                @isset($dokumentasis)
+                    @foreach($dokumentasis as $dok)
+                        <div class="bg-gray-50 rounded-xl overflow-hidden border border-gray-200 p-3 flex flex-col justify-between">
+                            <div>
+                                <img src="{{ asset('storage/' . $dok->foto) }}" class="w-full h-36 object-cover rounded-lg mb-3" alt="Foto">
+                                <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">{{ $dok->kategori }}</span>
+                                <h4 class="text-xs font-bold text-gray-900 mt-1 line-clamp-1">{{ $dok->judul }}</h4>
+                            </div>
+                            <div class="mt-4 pt-2 border-t border-gray-200 flex justify-end">
+                                <form action="{{ route('admin.dokumentasi.destroy', $dok->id) }}" method="POST" onsubmit="return confirm('Hapus foto ini?')">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="text-rose-600 hover:text-rose-800 text-xs font-bold flex items-center gap-1">
+                                        <i class="fa-solid fa-trash"><span>Hapus</span></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @endforeach
+                @endisset
+            </div>
+        </div>
+    </div>
+
+</div>
 
             <!-- TAB 3: VERIFIKASI KARTANU -->
             <div x-show="activeTab === 'kartanu'" style="display: none;" class="p-6 space-y-6">
@@ -364,6 +431,95 @@
         </table>
     </div>
 </div>
+
+
+    <!-- MODAL TAMBAH BERITA -->
+    <div x-show="showTambahBeritaModal" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" x-transition>
+        <div class="bg-white w-full max-w-lg rounded-3xl p-6 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button @click="showTambahBeritaModal = false" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 font-bold text-lg">&times;</button>
+            <h3 class="text-lg font-black text-gray-900">Tambah Berita Baru</h3>
+            
+            <form action="{{ route('admin.berita.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4 text-xs">
+                @csrf
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">Judul Berita</label>
+                    <input type="text" name="judul" required class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-nu" placeholder="Masukkan judul berita...">
+                </div>
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">Kategori</label>
+                    <select name="kategori" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-nu">
+                        <option value="BERITA">BERITA</option>
+                        <option value="PENGUMUMAN">PENGUMUMAN</option>
+                        <option value="KEGIATAN">KEGIATAN</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">Upload Gambar Cover</label>
+                    <input type="file" name="gambar" class="w-full px-3 py-2 border border-gray-200 rounded-xl bg-gray-50">
+                </div>
+                <div>
+    <label class="block text-xs font-bold text-gray-700 mb-1">Tanggal Berita</label>
+    <input type="date" name="tanggal" max="{{ date('Y-m-d') }}" value="{{ date('Y-m-d') }}" required
+        class="w-full text-xs rounded-xl border-gray-200 focus:border-emerald-600 focus:ring-emerald-600 p-3 bg-gray-50">
+</div>
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">Isi Konten Berita</label>
+                    <textarea name="isi" rows="4" required class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-nu" placeholder="Tuliskan isi berita di sini..."></textarea>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" @click="showTambahBeritaModal = false" class="px-4 py-2 bg-gray-100 rounded-xl font-bold text-gray-600">Batal</button>
+                    <button type="submit" class="px-4 py-2 bg-nu text-white rounded-xl font-bold shadow-sm">Simpan Berita</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL TAMBAH KEGIATAN (JADWAL) -->
+    <div x-show="showTambahKegiatanModal" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" x-transition>
+        <div class="bg-white w-full max-w-lg rounded-3xl p-6 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button @click="showTambahKegiatanModal = false" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 font-bold text-lg">&times;</button>
+            <h3 class="text-lg font-black text-gray-900">Tambah Jadwal Kegiatan Baru</h3>
+            
+            <form action="{{ route('kegiatan.store') }}" method="POST" class="space-y-4 text-xs">
+                @csrf
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">Nama / Judul Kegiatan</label>
+                    <input type="text" name="judul" required class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-nu" placeholder="Contoh: Pengajian Selapanan Malam Jumat Pahing">
+                </div>
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">Kategori</label>
+                    <select name="kategori" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-nu bg-white">
+                        <option value="Pengajian">Pengajian</option>
+                        <option value="Hadroh & Shalawat">Hadroh & Shalawat</option>
+                        <option value="Peringatan Harlah">Peringatan Harlah</option>
+                        <option value="Musyawarah">Musyawarah</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-gray-700 mb-1">Tanggal</label>
+                        <input type="date" name="tanggal" required class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-nu">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-gray-700 mb-1">Waktu / Jam</label>
+                        <input type="text" name="waktu" value="19:30 WIB - Selesai" required class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-nu">
+                    </div>
+                </div>
+               <div>
+    <label class="block font-bold text-gray-700 mb-1">Lokasi Tempat</label>
+    <input type="text" name="lokasi" required class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-nu" placeholder="Masukkan lokasi kegiatan (misal: Masjid Al-Huda Kedungurang)">
+</div>
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">Deskripsi Singkat (Opsional)</label>
+                    <textarea name="deskripsi" rows="3" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-nu" placeholder="Keterangan tambahan..."></textarea>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" @click="showTambahKegiatanModal = false" class="px-4 py-2 bg-gray-100 rounded-xl font-bold text-gray-600">Batal</button>
+                    <button type="submit" class="px-4 py-2 bg-nu text-white rounded-xl font-bold shadow-sm">Simpan Jadwal</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <footer class="w-full bg-white border-t border-gray-200 py-4 text-center text-xs text-gray-500 mt-auto">
         <p>© 2026 Admin Panel - Pengurus Ranting Nahdlatul Ulama Kedungurang.</p>
