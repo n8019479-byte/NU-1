@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "framework": "laravel",
+  "routes": [
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/public/index.php"
+    }
+  ]
+}
